@@ -11,8 +11,6 @@ import time
 from typing import Generator, List, Set
 import xml.etree.ElementTree as ET
 
-import streamlit as st
-
 from .constants import RajceButton
 from .utils import TaskExecutor, InOut
 from .logger import Logger
@@ -224,18 +222,3 @@ class Rajce:
     if not cls.user:
       raise AttributeError('No username set.')
     cls.homepage = f"https://{cls.user}.rajce.idnes.cz/"
-
-
-def main():
-  Rajce.start_driver()
-  Rajce.user = st.text_input('Rajce username:')
-  Rajce.set_homepage()
-  # get album -> date mapping
-  mapping = Rajce.save_albumdate_mapping()
-  tasks = Rajce.get_image_tasks(album_date_mapping=mapping)
-  TaskExecutor.init(tasks)
-  TaskExecutor.run_tasks(task_performer=Rajce.task_performer)
-
-
-if __name__ == '__main__':
-  main()

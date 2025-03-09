@@ -2,7 +2,7 @@ import atexit
 from .constants import RajceButton
 from .logger import Logger
 from .scraper import Rajce
-from .utils import InOut
+from .utils import InOut, TaskExecutor
 from pathlib import Path
 
 
