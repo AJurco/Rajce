@@ -1,0 +1,6 @@
+.vscode/
+*.exe
+__pycache__/
+testing.ipynb
+mapping.json
+log/
