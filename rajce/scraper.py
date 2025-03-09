@@ -11,6 +11,8 @@ import time
 from typing import Generator, List, Set
 import xml.etree.ElementTree as ET
 
+import streamlit as st
+
 from .constants import RajceButton
 from .utils import TaskExecutor, InOut
 from .logger import Logger
@@ -74,6 +76,7 @@ def download_image(image_url, save_dir: Path, filename: Path):
 
 class Rajce:
   # most of these are defined in __init__.py
+  user = None
   homepage = None
   output_folder = None
 
@@ -216,9 +219,17 @@ class Rajce:
       InOut.write_to_json(file=mapping_file, data=mapping)
     return InOut.read_json(file=mapping_file)
 
+  @classmethod
+  def set_homepage(cls) -> str:
+    if not cls.user:
+      raise AttributeError('No username set.')
+    cls.homepage = f"https://{cls.user}.rajce.idnes.cz/"
+
 
 def main():
   Rajce.start_driver()
+  Rajce.user = st.text_input('Rajce username:')
+  Rajce.set_homepage()
   # get album -> date mapping
   mapping = Rajce.save_albumdate_mapping()
   tasks = Rajce.get_image_tasks(album_date_mapping=mapping)

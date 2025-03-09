@@ -6,14 +6,14 @@ from .utils import InOut
 from pathlib import Path
 
 
-config_file = Path('C:\\Users\\adamj\\Documents\\git\\code_bites\\scraper') / Path('config.json')
+config_file = Path('config.json')
 config = InOut.read_json(file=config_file)
 Logger.config = config['logger']
 
 # rajce config
 atexit.register(Rajce.cleanup)
 rajce = config['rajce']
-Rajce.homepage = f"https://{rajce['user']}.rajce.idnes.cz/"
+# Rajce.homepage = f"https://{rajce['user']}.rajce.idnes.cz/"
 Rajce.output_folder = Path.home() / Path('Downloads') / Path(rajce['user'])
 
 # set popups
