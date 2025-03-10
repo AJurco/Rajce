@@ -12,7 +12,7 @@ from typing import Generator, List, Set
 import xml.etree.ElementTree as ET
 
 from .constants import RajceButton
-from .utils import TaskExecutor, InOut
+from .utils import InOut
 from .logger import Logger
 
 
@@ -76,10 +76,11 @@ class Rajce:
   # most of these are defined in __init__.py
   user = None
   homepage = None
-  output_folder = None
+  download_folder = None # see init
+  output_folder = None # see init
 
-  driver_file = None
-  driver_options = None
+  driver_file = None  # see init
+  driver_options = None  # see init
   driver: webdriver.Chrome = None # see init
   homepage_popups = [] # see init
 
@@ -218,7 +219,7 @@ class Rajce:
     return InOut.read_json(file=mapping_file)
 
   @classmethod
-  def set_homepage(cls) -> str:
-    if not cls.user:
-      raise AttributeError('No username set.')
+  def set_user(cls, user: str) -> None:
+    cls.user = user
     cls.homepage = f"https://{cls.user}.rajce.idnes.cz/"
+    cls.output_folder = cls.download_folder / Path(user)

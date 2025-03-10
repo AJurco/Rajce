@@ -1,8 +1,7 @@
 {
   "driver_options": ["--headless"],
   "rajce": {
-    "user": "salomaaje91",
-    "chromedriver": "C:\\Users\\adamj\\Documents\\git\\code_bites\\scraper\\chromedriver.exe"
+    "user": "salomaaje91"
   },
   "logger": {
     "level": "INFO",
