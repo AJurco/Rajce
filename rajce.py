@@ -26,4 +26,4 @@ def no_streamlit():
 
 
 if __name__ == '__main__':
-  no_streamlit()
+  main()

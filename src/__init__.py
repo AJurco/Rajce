@@ -1,4 +1,6 @@
 import atexit
+import os
+
 from .constants import RajceButton
 from .logger import Logger
 from .main import Rajce
@@ -14,8 +16,10 @@ atexit.register(Rajce.cleanup)
 # set popups
 Rajce.homepage_popups = [RajceButton.COOKIES_AGREEMENT]
 Rajce.download_folder = Path.home() / Path('Downloads')
+Rajce.download_folder.chmod(0o755)
 
 # set chromedriver
 Rajce.driver_file = Path(__file__).parent.parent / Path(r'drivers/chromedriver.exe')
+os.chmod(str(Rajce.driver_file), 0o755)
 # driver options
 Rajce.driver_options = CONFIG.get('driver_options')
