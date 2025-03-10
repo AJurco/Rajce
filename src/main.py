@@ -212,7 +212,7 @@ class Rajce:
 
   @classmethod
   def save_albumdate_mapping(cls):
-    mapping_file = Path('mapping.json')
+    mapping_file = cls.output_folder / Path('mapping.json')
     if not mapping_file.exists():
       mapping = cls.get_album_date_mapping()
       InOut.write_to_json(file=mapping_file, data=mapping)
