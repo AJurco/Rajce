@@ -14,12 +14,12 @@ from selenium.webdriver.remote.webelement import WebElement
 
 from pathlib import Path
 import time
-from typing import Generator, List, Set, Optional
+from typing import Generator, List, Set
 import xml.etree.ElementTree as ET
 
 # relative imports
 from .constants import RajceButton
-from .utils import InOut, TaskExecutor
+from .utils import InOut
 from .logger import Logger
 
 
@@ -65,45 +65,29 @@ def parse_rss(rss, namespace: dict=None, look_for: str='media:content', get: str
 
 
 def download_image_streamlit(image_url, save_dir: Path, filename: Path):
-  response = requests.get(image_url)
-  if response.status_code == 200:
-    # Save the image
-    full_path = save_dir / filename
-    if full_path.exists():
-      logger.warning('Image already exists.')
-      return None
-    # Convert image data to base64
-    b64 = base64.b64encode(response.content).decode()
-    href = f'<a href="data:image/jpeg;base64,{b64}" download="{filename}">Download Image</a>'
-    st.markdown(href, unsafe_allow_html=True)
+  try:
+    response = requests.get(image_url)
+    if response.status_code == 200:    
+      # Convert image data to base64
+      b64 = base64.b64encode(response.content).decode()
+      href = f'<a href="data:image/jpeg;base64,{b64}" download="{save_dir}/{filename}">Download {filename}</a>'
+      st.markdown(href, unsafe_allow_html=True)
 
-    # Trigger the download by simulating a click
-    js_code = f"""
-    <script>
-        var link = document.createElement('a');
-        link.href = "{href.split('href=')[1].split('><')[0]}";
-        link.download = "{full_path}";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    </script>
-    """
-    st.markdown(js_code, unsafe_allow_html=True)
-
-
-def download_image(image_url, save_dir: Path, filename: Path):
-  response = requests.get(image_url)
-  if response.status_code == 200:
-    # Save the image
-    full_path = save_dir / filename
-    if full_path.exists():
-      logger.warning('Image already exists.')
-      return None
-    with open(full_path, 'wb') as f:
-      f.write(response.content)
-    logger.info(f"Image downloaded successfully: {full_path}")
-  else:
-    logger.warning(f"Failed to download image. Status code: {response.status_code}")
+      # Trigger the download by simulating a click
+      js_code = f"""
+      <script>
+          var link = document.createElement('a');
+          link.href = "{href.split('href=')[1].split('><')[0]}";
+          link.download = "{filename}";
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+      </script>
+      """
+      st.markdown(js_code, unsafe_allow_html=True)
+  except Exception as err:
+    logger.warning(f'Failed to download an image: {err}.')
+    st.error(f'Failed to download an image: {err}.')    
 
 
 class Rajce:
@@ -223,7 +207,7 @@ class Rajce:
       album_name = f'{album_date_mapping.get(album_name, "")}_' + album_name
 
       album_folder = cls.output_folder / Path(album_name)
-      album_folder.mkdir(exist_ok=True, parents=True)
+      # album_folder.mkdir(exist_ok=True, parents=True)
 
       for url in img_links:
         yield {'url': url, 'album_folder': str(album_folder), 'filename': cls.img_name_from_link(url)}
@@ -252,7 +236,8 @@ class Rajce:
 
   @classmethod
   def save_albumdate_mapping(cls):
-    if not cls.mapping_file.exists():
+    mapping_file = Path(__file__).parent.parent / Path(r'config/mapping.json')
+    if not mapping_file.exists():
       mapping = cls.get_album_date_mapping()
       InOut.write_to_json(file=cls.mapping_file, data=mapping)
     return InOut.read_json(file=cls.mapping_file)

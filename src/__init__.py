@@ -15,12 +15,8 @@ Logger.config = CONFIG['logger']
 atexit.register(Rajce.cleanup)
 # set popups
 Rajce.homepage_popups = [RajceButton.COOKIES_AGREEMENT]
-Rajce.download_folder = Path.home() / Path('Downloads') / Path('rajce')
-Rajce.download_folder.mkdir(exist_ok=True)
-os.chmod(Rajce.download_folder, 0o755)
 # task executor
-TaskExecutor.task_file = Rajce.download_folder / Path('rajce_taskfile.txt')
-
+TaskExecutor.task_file = Path(__file__).parent.parent / Path(r'config/rajce_taskfile.txt')
 # set chromedriver
 Rajce.driver_file = Path(__file__).parent.parent / Path(r'drivers/chromedriver.exe')
 os.chmod(Rajce.driver_file, 0o755)
