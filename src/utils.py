@@ -34,7 +34,7 @@ class InOut:
 
 
 class TaskExecutor:
-  task_file: Path = Path.home() / Path('Downloads') / Path('task_executor.txt')
+  task_file: Path = Path(__file__).parent.parent / Path('config/task_executor.txt')
   tasks: deque = None
 
   @staticmethod

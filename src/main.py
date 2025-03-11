@@ -6,7 +6,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.webelement import WebElement
 
-import os
 from pathlib import Path
 import requests
 import time
@@ -14,7 +13,7 @@ from typing import Generator, List, Set
 import xml.etree.ElementTree as ET
 
 from .constants import RajceButton
-from .utils import InOut
+from .utils import InOut, TaskExecutor
 from .logger import Logger
 
 
@@ -79,7 +78,8 @@ class Rajce:
   user = None
   homepage = None
   download_folder = None # see init
-  output_folder = None # see init
+  output_folder = None
+  mapping_file = Path(__file__).parent.parent / Path('config/mapping.json')
 
   driver_file = None  # see init
   driver_options = None  # see init
@@ -94,6 +94,8 @@ class Rajce:
       logger.info('Driver closed at exit.')
     except:
       logger.warning('Could not close driver.')
+    if not TaskExecutor.task_file.exists():
+      Rajce.mapping_file.unlink(missing_ok=True)
 
   @staticmethod
   def album_name_from_link(url: str):
@@ -170,13 +172,14 @@ class Rajce:
     return sorted(list(album_links))
 
   @staticmethod
-  def get_img_links(album_link: str) -> str:
+  def get_img_links(album_link: str) -> list:
     rss = requests.get(url=album_link + '/media.rss').text
     return parse_rss(rss)
 
   @classmethod
   def get_image_tasks(cls, album_date_mapping: dict=None) -> Generator[dict, None, None]:
-    album_date_mapping = dict() if album_date_mapping is None else album_date_mapping
+    if album_date_mapping is None:
+      album_date_mapping = dict()
     cls.goto_homepage()
     album_links = cls.get_album_links()
 
@@ -206,22 +209,23 @@ class Rajce:
     album_links = cls.get_album_links()
     for link in album_links:
       album_name = cls.album_name_from_link(link)
+      logger.info(f'Deriving date of creation for album: {album_name}.')
       cls.goto_album(link)
       time.sleep(RajceButton.SMALL_SLEEP.value)
       date = cls.get_album_date()
       mapping[album_name] = date
+      logger.info('Done')
     return mapping
 
   @classmethod
   def save_albumdate_mapping(cls):
-    mapping_file = cls.output_folder / Path('mapping.json')
-    if not mapping_file.exists():
+    if not cls.mapping_file.exists():
       mapping = cls.get_album_date_mapping()
-      InOut.write_to_json(file=mapping_file, data=mapping)
-    return InOut.read_json(file=mapping_file)
+      InOut.write_to_json(file=cls.mapping_file, data=mapping)
+    return InOut.read_json(file=cls.mapping_file)
 
   @classmethod
   def set_user(cls, user: str) -> None:
     cls.user = user
     cls.homepage = f"https://{cls.user}.rajce.idnes.cz/"
-    cls.output_folder = cls.download_folder / Path(user)
+    cls.output_folder = cls.download_folder / Path(f'rajce_{user}')
