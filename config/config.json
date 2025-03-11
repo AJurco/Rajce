@@ -1,0 +1,13 @@
+{
+  "driver_options": ["--headless"],
+  "rajce": {
+    "user": "salomaaje91"
+  },
+  "logger": {
+    "level": "INFO",
+    "console_format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "file_format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "encoding": "utf8",
+    "mode": "a"
+  }
+}
