@@ -1,3 +1,9 @@
+# via streamlit
+import streamlit as st
+import base64
+
+# 3rd party
+import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
@@ -7,17 +13,17 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.webelement import WebElement
 
 from pathlib import Path
-import requests
 import time
-from typing import Generator, List, Set
+from typing import Generator, List, Set, Optional
 import xml.etree.ElementTree as ET
 
+# relative imports
 from .constants import RajceButton
 from .utils import InOut, TaskExecutor
 from .logger import Logger
 
 
-logger = Logger(name=__name__, level='INFO', file=__file__)
+logger = Logger(name=__name__, level='INFO')
 
 
 def get_driver(driver_file: Path, options: list=None):
@@ -56,6 +62,33 @@ def parse_rss(rss, namespace: dict=None, look_for: str='media:content', get: str
       if result:
         results.append(result)
   return results
+
+
+def download_image_streamlit(image_url, save_dir: Path, filename: Path):
+  response = requests.get(image_url)
+  if response.status_code == 200:
+    # Save the image
+    full_path = save_dir / filename
+    if full_path.exists():
+      logger.warning('Image already exists.')
+      return None
+    # Convert image data to base64
+    b64 = base64.b64encode(response.content).decode()
+    href = f'<a href="data:image/jpeg;base64,{b64}" download="{filename}">Download Image</a>'
+    st.markdown(href, unsafe_allow_html=True)
+
+    # Trigger the download by simulating a click
+    js_code = f"""
+    <script>
+        var link = document.createElement('a');
+        link.href = "{href.split('href=')[1].split('><')[0]}";
+        link.download = "{full_path}";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    </script>
+    """
+    st.markdown(js_code, unsafe_allow_html=True)
 
 
 def download_image(image_url, save_dir: Path, filename: Path):
@@ -196,10 +229,10 @@ class Rajce:
         yield {'url': url, 'album_folder': str(album_folder), 'filename': cls.img_name_from_link(url)}
 
   @staticmethod
-  def task_performer(task: dict):
+  def task_performer(task: dict, download_function=download_image_streamlit):
     img_name = task['filename']
     save_dir = Path(task['album_folder'])
-    download_image(image_url=task['url'], save_dir=save_dir, filename=img_name)
+    download_function(image_url=task['url'], save_dir=save_dir, filename=img_name)
     time.sleep(RajceButton.TINY_SLEEP.value)
 
   @classmethod
@@ -214,7 +247,7 @@ class Rajce:
       time.sleep(RajceButton.SMALL_SLEEP.value)
       date = cls.get_album_date()
       mapping[album_name] = date
-      logger.info('Done')
+      logger.info(f'Album folder {album_name} created.')
     return mapping
 
   @classmethod
