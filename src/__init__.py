@@ -18,7 +18,11 @@ Rajce.homepage_popups = [RajceButton.COOKIES_AGREEMENT]
 # task executor
 TaskExecutor.task_file = Path(__file__).parent.parent / Path(r'config/rajce_taskfile.txt')
 # set chromedriver
-Rajce.driver_file = Path(__file__).parent.parent / Path(r'drivers/chromedriver.exe')
+if os.name == 'nt':  # Windows
+  Rajce.driver_file = Path(__file__).parent.parent / Path(r'drivers/chromedriver.exe')
+else:
+  Rajce.driver_file = Path(__file__).parent.parent / Path(r'drivers/chromedriver')
+
 os.chmod(Rajce.driver_file, 0o755)
 # driver options
 Rajce.driver_options = CONFIG.get('driver_options')
