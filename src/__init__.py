@@ -3,7 +3,7 @@ import os
 
 from .constants import RajceButton
 from .logger import Logger
-from .main import Rajce
+from .main import Rajce, setup
 from .utils import InOut, TaskExecutor
 from pathlib import Path
 

@@ -12,6 +12,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.webelement import WebElement
 
+# base packages
+import os
 from pathlib import Path
 import time
 from typing import Generator, List, Set
@@ -24,6 +26,14 @@ from .logger import Logger
 
 
 logger = Logger(name=__name__, level='INFO')
+
+
+def setup():
+  if not os.path.exists("/usr/bin/chromedriver"):
+    st.write("Setting up Chromium and Chromedriver...")
+    os.system("apt-get update")
+    os.system("apt-get install -y chromium-browser chromium-chromedriver")
+    st.write("Chromedriver installed!")
 
 
 def get_driver(driver_file: Path, options: list=None):
