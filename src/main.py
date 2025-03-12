@@ -31,9 +31,21 @@ logger = Logger(name=__name__, level='INFO')
 def setup():
   if not os.path.exists("/usr/bin/chromedriver"):
     st.write("Setting up Chromium and Chromedriver...")
-    os.system("apt-get update")
-    os.system("apt-get install -y chromium-browser chromium-chromedriver")
-    st.write("Chromedriver installed!")
+    try:
+      # Combine all setup commands in one os.system call
+      result = os.system("""
+          apt-get update && \
+          apt-get install -y wget unzip chromium-browser chromium-chromedriver && \
+          ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
+      """)
+      if result == 0:
+          st.write("Chromedriver installed successfully!")
+      else:
+          st.write("Error during installation. Status code:", result)
+    except Exception as e:
+        st.write("Setup failed:", str(e))
+  else:
+    st.write("Chromedriver is already installed.")
 
 
 def get_driver(driver_file: Path, options: list=None):
