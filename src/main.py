@@ -29,6 +29,7 @@ logger = Logger(name=__name__, level='INFO')
 
 
 def setup():
+  Rajce.driver_file = Path("/usr/bin/chromedriver")
   if not os.path.exists("/usr/bin/chromedriver"):
     st.write("Setting up Chromium and Chromedriver...")
     try:
