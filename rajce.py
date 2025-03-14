@@ -5,8 +5,6 @@ import os
 logger = Logger(name=__name__, level='INFO')
 
 def main():
-  result = os.system('find /usr -name chromium')
-  print(result)
   Rajce.start_driver()
   user = st.text_input('rajce_username:')
   Rajce.set_user(user)
@@ -18,8 +16,15 @@ def main():
     TaskExecutor.init(tasks)
     TaskExecutor.run_tasks(task_performer=Rajce.task_performer)
 
+def testing():
+  result = os.system('find /usr -name chromium')
+  st.write(result)
+  result = os.system('find /usr -name chromedriver')
+  st.write(result)
+ 
 
 if __name__ == '__main__':
-  main()
-  Rajce.cleanup()
-  logger.info('Rajce cleanup complete.')
+  testing()
+  # main()
+  # Rajce.cleanup()
+  # logger.info('Rajce cleanup complete.')
