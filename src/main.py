@@ -36,8 +36,10 @@ def setup():
       # Combine all setup commands in one os.system call
       result = os.system("""
           apt-get update && \
-          apt-get install -y wget unzip chromium-browser chromium-chromedriver && \
-          ln -s /usr/lib/chromium-browser/chromedriver /usr/bin/chromedriver
+          apt-get install -y wget unzip chromium-browser && \
+          wget -q -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip && \
+          unzip /tmp/chromedriver.zip -d /usr/bin/ && \
+          chmod +x /usr/bin/chromedriver
       """)
       if result == 0:
           st.write("Chromedriver installed successfully!")
