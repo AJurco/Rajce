@@ -13,7 +13,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.remote.webelement import WebElement
 
 # base packages
-import os
 from pathlib import Path
 import time
 from typing import Generator, List, Set
@@ -67,7 +66,7 @@ def parse_rss(rss, namespace: dict=None, look_for: str='media:content', get: str
   return results
 
 
-def download_image_streamlit(image_url, save_dir: Path, filename: Path):
+def download_image(image_url, save_dir: Path, filename: Path):
   try:
     response = requests.get(image_url)
     if response.status_code == 200:    
@@ -97,8 +96,6 @@ class Rajce:
   # most of these are defined in __init__.py
   user = None
   homepage = None
-  download_folder = None # see init
-  output_folder = None
   mapping_file = Path(__file__).parent.parent / Path('config/mapping.json')
 
   driver_file = None  # see init
@@ -209,17 +206,16 @@ class Rajce:
       album_name = cls.album_name_from_link(link)
       album_name = f'{album_date_mapping.get(album_name, "")}_' + album_name
 
-      album_folder = cls.output_folder / Path(album_name)
-      # album_folder.mkdir(exist_ok=True, parents=True)
+      album_folder = cls.user / Path(album_name)
 
       for url in img_links:
         yield {'url': url, 'album_folder': str(album_folder), 'filename': cls.img_name_from_link(url)}
 
   @staticmethod
-  def task_performer(task: dict, download_function=download_image_streamlit):
+  def task_performer(task: dict):
     img_name = task['filename']
     save_dir = Path(task['album_folder'])
-    download_function(image_url=task['url'], save_dir=save_dir, filename=img_name)
+    download_image(image_url=task['url'], save_dir=save_dir, filename=img_name)
     time.sleep(RajceButton.TINY_SLEEP.value)
 
   @classmethod
@@ -249,4 +245,3 @@ class Rajce:
   def set_user(cls, user: str) -> None:
     cls.user = user
     cls.homepage = f"https://{cls.user}.rajce.idnes.cz/"
-    cls.output_folder = cls.download_folder / Path(f'rajce_{user}')

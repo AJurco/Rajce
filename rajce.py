@@ -7,8 +7,9 @@ logger = Logger(name=__name__, level='INFO')
 def main():
   Rajce.start_driver()
   user = st.text_input('rajce_username:')
+  st.write(f'User set to {user}.')
   Rajce.set_user(user)
-  logger.info(F'User set to {Rajce.user}.')
+  logger.info(f'User set to {Rajce.user}.')
   if st.button("Download Images"):
     # get album -> date mapping
     mapping = Rajce.save_albumdate_mapping()
