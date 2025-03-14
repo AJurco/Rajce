@@ -36,7 +36,7 @@ def get_driver(driver_file: Path, options: list=None):
   else:
     chrome_options = None
   # Initialize the WebDriver
-  chrome_options.binary_location = "/usr/bin/chromium-browser"
+  chrome_options.binary_location = "/usr/bin/chromium"
   service = Service(driver_file)
   return webdriver.Chrome(service=service, options=chrome_options)
 

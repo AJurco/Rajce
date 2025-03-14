@@ -1,6 +1,7 @@
 {
   "driver_options": ["--headless", "--no-sandbox", "--disable-dev-shm-usage"],
   "driver_path": "/usr/bin/chromedriver",
+  "chromium_path": "/usr/bin/chromium",
   "logger": {
     "level": "INFO",
     "console_format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",

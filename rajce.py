@@ -16,15 +16,9 @@ def main():
     TaskExecutor.init(tasks)
     TaskExecutor.run_tasks(task_performer=Rajce.task_performer)
 
-def testing():
-  result = os.system('find /usr -name chromium')
-  st.write(result)
-  result = os.system('find /usr -name chromedriver')
-  st.write(result)
- 
 
 if __name__ == '__main__':
-  testing()
-  # main()
-  # Rajce.cleanup()
-  # logger.info('Rajce cleanup complete.')
+  main()
+  Rajce.cleanup()
+  logger.info('Rajce cleanup complete.')
+
