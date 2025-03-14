@@ -1,9 +1,12 @@
 from src import Rajce, Logger, TaskExecutor
 import streamlit as st
+import os
 
 logger = Logger(name=__name__, level='INFO')
 
 def main():
+  result = os.system('find /usr -name chromium')
+  print(result)
   Rajce.start_driver()
   user = st.text_input('rajce_username:')
   Rajce.set_user(user)
