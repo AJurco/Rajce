@@ -28,29 +28,6 @@ from .logger import Logger
 logger = Logger(name=__name__, level='INFO')
 
 
-def setup():
-  Rajce.driver_file = Path("/usr/bin/chromedriver")
-  if not os.path.exists("/usr/bin/chromedriver"):
-    st.write("Setting up Chromium and Chromedriver...")
-    try:
-      # Combine all setup commands in one os.system call
-      result = os.system("""
-          apt-get update && \
-          apt-get install -y wget unzip chromium-browser && \
-          wget -q -O /tmp/chromedriver.zip https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip && \
-          unzip /tmp/chromedriver.zip -d /usr/bin/ && \
-          chmod +x /usr/bin/chromedriver
-      """)
-      if result == 0:
-          st.write("Chromedriver installed successfully!")
-      else:
-          st.write("Error during installation. Status code:", result)
-    except Exception as e:
-        st.write("Setup failed:", str(e))
-  else:
-    st.write("Chromedriver is already installed.")
-
-
 def get_driver(driver_file: Path, options: list=None):
   if options is not None:
     chrome_options = Options()
